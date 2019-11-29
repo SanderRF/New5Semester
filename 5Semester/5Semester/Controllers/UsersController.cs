@@ -18,6 +18,11 @@ namespace _5Semester.Controllers
             _context = context;
         }
 
+        public IActionResult Login()
+        {
+            return View();
+        }
+
         // GET: Users
         public async Task<IActionResult> Index()
         {
@@ -59,7 +64,7 @@ namespace _5Semester.Controllers
             {
                 _context.Add(user);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Login));
             }
             return View(user);
         }
