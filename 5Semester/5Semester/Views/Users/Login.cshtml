@@ -1,4 +1,5 @@
-﻿@{
+﻿@model _5Semester.Models.User
+@{
     ViewData["Title"] = "Privacy Policy";
 }
 
@@ -10,15 +11,33 @@
     <title>View</title>
 </head>
 <body>
-    <div style="position:relative; width:100%; height:100%;">
+    @*<div style="position:relative; width:100%; height:100%;">
         <div style="display:inline-block; margin-left: calc(50% - 89px); margin-top: 10%;">
             <input style="display:block; margin-bottom:20px;" type="text" />
             <input style="display:block; margin-bottom:20px;" type="password" />
             <button style="display:block; margin:0 auto;">Login</button>
+        </div>*@
+
+    <form asp-action="LoginBtn">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-group">
+            <label asp-for="Username" class="control-label"></label>
+            <input asp-for="Username" name="user" class="form-control" />
+            <span asp-validation-for="Username" class="text-danger"></span>
         </div>
-        <div style="padding-bottom:200px;">
-            <a asp-area="" asp-controller="Users" asp-action="Create">Sign Up</a>
+        <div class="form-group">
+            <label asp-for="Password" class="control-label"></label>
+            <input asp-for="Password" name="pass" class="form-control" />
+            <span asp-validation-for="Password" class="text-danger"></span>
         </div>
+        <div class="form-group">
+            <input type="submit" value="Login" class="btn btn-primary" />
+        </div>
+    </form>
+
+    <div style="padding-bottom:200px;">
+        <a asp-area="" asp-controller="Users" asp-action="Create">Sign Up</a>
     </div>
+   @* </div>*@
 </body>
 </html>

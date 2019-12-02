@@ -23,6 +23,18 @@ namespace _5Semester.Controllers
             return View();
         }
 
+        public async Task<IActionResult> LoginBtn(string user, string pass)
+        {
+            User userinfo = _context.User
+                         .Where(b => b.Username == user)
+                    .FirstOrDefault();
+            if (userinfo.Password == pass)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            return NotFound();
+        }
+
         // GET: Users
         public async Task<IActionResult> Index()
         {

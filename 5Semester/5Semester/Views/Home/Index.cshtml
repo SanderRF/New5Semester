@@ -6,6 +6,13 @@
 
 <h1>Home</h1>
 
+<form asp-controller="Home" asp-action="Index">
+    <p>
+        <input placeholder="Søg efter produkt" type="text" name="SearchString">
+        <input type="submit" value="Søg" />
+    </p>
+</form>
+
 <table class="table">
     <thead>
         <tr>
