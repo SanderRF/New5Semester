@@ -11,13 +11,6 @@
     <title>View</title>
 </head>
 <body>
-    @*<div style="position:relative; width:100%; height:100%;">
-        <div style="display:inline-block; margin-left: calc(50% - 89px); margin-top: 10%;">
-            <input style="display:block; margin-bottom:20px;" type="text" />
-            <input style="display:block; margin-bottom:20px;" type="password" />
-            <button style="display:block; margin:0 auto;">Login</button>
-        </div>*@
-
     <form asp-action="LoginBtn">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div class="form-group">
@@ -38,6 +31,5 @@
     <div style="padding-bottom:200px;">
         <a asp-area="" asp-controller="Users" asp-action="Create">Sign Up</a>
     </div>
-   @* </div>*@
 </body>
 </html>
