@@ -6,12 +6,15 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using _5Semester.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace _5Semester.Controllers
 {
     public class UsersController : Controller
     {
         private readonly _5SemesterContext _context;
+        const string SessionName = "_Name";
+        const string SessionAge = "_Age";
 
         public UsersController(_5SemesterContext context)
         {
@@ -28,11 +31,17 @@ namespace _5Semester.Controllers
             User userinfo = _context.User
                          .Where(b => b.Username == user)
                     .FirstOrDefault();
-            if (userinfo.Password == pass)
+            if (pass != null && userinfo != null)
             {
-                return RedirectToAction("Index", "Home");
+                if (userinfo.Password == pass)
+                {
+                    HttpContext.Session.SetString(SessionName, user);
+                    HttpContext.Session.SetInt32(SessionAge, 24);
+                    return RedirectToAction("Index", "Home");
+                }
             }
-            return NotFound();
+            //return Content("<div>Hello</div>", "text/html"); ;
+            return RedirectToAction("Login", "Users");
         }
 
         // GET: Users

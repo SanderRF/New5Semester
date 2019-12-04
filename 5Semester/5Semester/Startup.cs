@@ -26,7 +26,11 @@ namespace _5Semester
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
-
+            services.AddDistributedMemoryCache();
+            services.AddSession(options => {
+                options.IdleTimeout = TimeSpan.FromMinutes(1);//You can set Time   
+            });
+            services.AddMvc();
             services.AddDbContext<_5SemesterContext>(options =>
                     options.UseSqlServer(Configuration.GetConnectionString("_5SemesterContext")));
         }
@@ -51,12 +55,15 @@ namespace _5Semester
 
             app.UseAuthorization();
 
+            app.UseSession();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
+            
         }
     }
 }
