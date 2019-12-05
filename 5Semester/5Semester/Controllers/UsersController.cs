@@ -35,12 +35,13 @@ namespace _5Semester.Controllers
             {
                 if (userinfo.Password == pass)
                 {
-                    HttpContext.Session.SetString(SessionName, user);
-                    HttpContext.Session.SetInt32(SessionAge, 24);
+                    HttpContext.Session.SetString(SessionName, userinfo.DisplayName);
+                    HttpContext.Session.SetInt32(SessionAge, 20000000);
+
+                    TempData["name"] = userinfo.DisplayName;
                     return RedirectToAction("Index", "Home");
                 }
             }
-            //return Content("<div>Hello</div>", "text/html"); ;
             return RedirectToAction("Login", "Users");
         }
 
