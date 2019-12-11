@@ -10,6 +10,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using _5Semester.Models;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace _5Semester
 {
@@ -27,9 +29,8 @@ namespace _5Semester
         {
             services.AddControllersWithViews();
             services.AddDistributedMemoryCache();
-            services.AddSession(options => {
-                options.IdleTimeout = TimeSpan.FromMinutes(1);//You can set Time   
-            });
+            services.AddSession();
+            services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddMvc();
             services.AddDbContext<_5SemesterContext>(options =>
                     options.UseSqlServer(Configuration.GetConnectionString("_5SemesterContext")));
@@ -54,7 +55,7 @@ namespace _5Semester
             app.UseRouting();
 
             app.UseAuthorization();
-
+            app.UseCookiePolicy();
             app.UseSession();
 
             app.UseEndpoints(endpoints =>
@@ -63,7 +64,6 @@ namespace _5Semester
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
-            
         }
     }
 }

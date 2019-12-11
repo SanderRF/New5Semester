@@ -7,11 +7,14 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using _5Semester.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authentication;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace _5Semester.Controllers
 {
     public class UsersController : Controller
-    {
+    {    
         private readonly _5SemesterContext _context;
         const string SessionName = "_Name";
         const string SessionAge = "_Age";
@@ -25,6 +28,11 @@ namespace _5Semester.Controllers
         {
             return View();
         }
+        public async Task<IActionResult> Logout()
+        {
+            HttpContext.Session.Clear();
+            return RedirectToAction("Index", "Home");
+        }
 
         public async Task<IActionResult> LoginBtn(string user, string pass)
         {
@@ -33,10 +41,23 @@ namespace _5Semester.Controllers
                     .FirstOrDefault();
             if (pass != null && userinfo != null)
             {
+                StringBuilder Sb = new StringBuilder();
+                using (var hash = SHA256.Create())
+                {
+                    Encoding enc = Encoding.UTF8;
+                    Byte[] result = hash.ComputeHash(enc.GetBytes(pass));
+
+                    foreach (Byte b in result)
+                        Sb.Append(b.ToString("x2"));
+                }
+                pass = Sb.ToString();
+
+            
                 if (userinfo.Password == pass)
                 {
-                    HttpContext.Session.SetString(SessionName, userinfo.DisplayName);
-                    HttpContext.Session.SetInt32(SessionAge, 20000000);
+                    HttpContext.Session.SetString("sessionName", userinfo.DisplayName);
+                    HttpContext.Session.SetString("sessionStatus", userinfo.Status);
+                    HttpContext.Session.SetInt32("sessionAge", 1576000000);
 
                     TempData["name"] = userinfo.DisplayName;
                     return RedirectToAction("Index", "Home");
@@ -48,7 +69,11 @@ namespace _5Semester.Controllers
         // GET: Users
         public async Task<IActionResult> Index()
         {
-            return View(await _context.User.ToListAsync());
+            string status = HttpContext.Session.GetString("sessionStatus");
+            if (status == "Admin"){
+                return View(await _context.User.ToListAsync());
+            }
+            return RedirectToAction("Login", "Users");
         }
 
         // GET: Users/Details/5
@@ -84,6 +109,18 @@ namespace _5Semester.Controllers
         {
             if (ModelState.IsValid)
             {
+                StringBuilder Sb = new StringBuilder();
+
+                using (var hash = SHA256.Create())
+                {
+                    Encoding enc = Encoding.UTF8;
+                    Byte[] result = hash.ComputeHash(enc.GetBytes(user.Password));
+
+                    foreach (Byte b in result)
+                        Sb.Append(b.ToString("x2"));
+                }
+                user.Password = Sb.ToString();
+
                 _context.Add(user);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Login));
@@ -123,6 +160,7 @@ namespace _5Semester.Controllers
             {
                 try
                 {
+
                     _context.Update(user);
                     await _context.SaveChangesAsync();
                 }

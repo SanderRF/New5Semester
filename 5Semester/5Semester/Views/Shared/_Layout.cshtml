@@ -1,4 +1,7 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor httpContextAccessor
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -29,9 +32,16 @@
                 <div>
 
                     <div>
-                        @TempData["name"]
+                        @httpContextAccessor.HttpContext.Session.GetString("sessionName")
                     </div>
-                    <a class="text-dark" asp-area="" asp-controller="Users" asp-action="Login">Login</a>
+                    @if (httpContextAccessor.HttpContext.Session.GetString("sessionName") == null)
+                    {
+                        <a class="text-dark" asp-area="" asp-controller="Users" asp-action="Login">Login</a>
+                    }
+                    else
+                    {
+                        <a class="text-dark" asp-area="" asp-controller="Users" asp-action="Logout">Log ud</a>
+                    }
                 </div>
             </div>
         </nav>
