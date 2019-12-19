@@ -16,8 +16,8 @@ namespace _5Semester.Controllers
     public class UsersController : Controller
     {    
         private readonly _5SemesterContext _context;
-        const string SessionName = "_Name";
-        const string SessionAge = "_Age";
+        //const string SessionName = "_Name";
+        //const string SessionAge = "_Age";
 
         public UsersController(_5SemesterContext context)
         {
@@ -57,9 +57,9 @@ namespace _5Semester.Controllers
                 {
                     HttpContext.Session.SetString("sessionName", userinfo.DisplayName);
                     HttpContext.Session.SetString("sessionStatus", userinfo.Status);
-                    HttpContext.Session.SetInt32("sessionAge", 1576000000);
+                    //HttpContext.Session.SetInt32("sessionAge", 1576000000);
 
-                    TempData["name"] = userinfo.DisplayName;
+                    //TempData["name"] = userinfo.DisplayName;
                     return RedirectToAction("Index", "Home");
                 }
             }
@@ -105,7 +105,7 @@ namespace _5Semester.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("UserId,Username,Password,DisplayName")] User user)
+        public async Task<IActionResult> Create([Bind("UserId,Username,Status,Password,DisplayName")] User user)
         {
             if (ModelState.IsValid)
             {
@@ -120,7 +120,8 @@ namespace _5Semester.Controllers
                         Sb.Append(b.ToString("x2"));
                 }
                 user.Password = Sb.ToString();
-
+                user.Status = "User";
+                ////////////////////////////////OVERPOST ATTACK//////////////////////QWERTY////////////////////////////////////
                 _context.Add(user);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Login));
