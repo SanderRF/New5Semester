@@ -57,7 +57,7 @@ namespace _5Semester.Controllers
                 {
                     HttpContext.Session.SetString("sessionName", userinfo.DisplayName);
                     HttpContext.Session.SetString("sessionStatus", userinfo.Status);
-                    //HttpContext.Session.SetInt32("sessionAge", 1576000000);
+                    HttpContext.Session.SetInt32("sessionAge", 1576000000);
 
                     //TempData["name"] = userinfo.DisplayName;
                     return RedirectToAction("Index", "Home");
@@ -73,7 +73,7 @@ namespace _5Semester.Controllers
             if (status == "Admin"){
                 return View(await _context.User.ToListAsync());
             }
-            return RedirectToAction("Login", "Users");
+            return RedirectToAction("Index", "Home");
         }
 
         // GET: Users/Details/5
@@ -121,7 +121,7 @@ namespace _5Semester.Controllers
                 }
                 user.Password = Sb.ToString();
                 user.Status = "User";
-                ////////////////////////////////OVERPOST ATTACK//////////////////////QWERTY////////////////////////////////////
+ 
                 _context.Add(user);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Login));
@@ -130,6 +130,7 @@ namespace _5Semester.Controllers
         }
 
         // GET: Users/Edit/5
+        
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
