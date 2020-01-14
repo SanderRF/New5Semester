@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authentication;
 using System.Security.Cryptography;
 using System.Text;
+using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 
 namespace _5Semester.Controllers
 {
@@ -41,23 +42,29 @@ namespace _5Semester.Controllers
                     .FirstOrDefault();
             if (pass != null && userinfo != null)
             {
-                StringBuilder Sb = new StringBuilder();
-                using (var hash = SHA256.Create())
-                {
-                    Encoding enc = Encoding.UTF8;
-                    Byte[] result = hash.ComputeHash(enc.GetBytes(pass));
+                //StringBuilder Sb = new StringBuilder();
+                //using (var hash = SHA256.Create())
+                //{
+                //    Encoding enc = Encoding.UTF8;
+                //    Byte[] result = hash.ComputeHash(enc.GetBytes(pass));
 
-                    foreach (Byte b in result)
-                        Sb.Append(b.ToString("x2"));
-                }
-                pass = Sb.ToString();
+                //    foreach (Byte b in result)
+                //        Sb.Append(b.ToString("x2"));
+                //}
+                //pass = Sb.ToString();
+                
+                pass = Convert.ToBase64String(KeyDerivation.Pbkdf2(
+                password: pass,
+                salt: userinfo.Salt,
+                prf: KeyDerivationPrf.HMACSHA1,
+                iterationCount: 10000,
+                numBytesRequested: 256 / 8));
 
-            
                 if (userinfo.Password == pass)
                 {
                     HttpContext.Session.SetString("sessionName", userinfo.DisplayName);
                     HttpContext.Session.SetString("sessionStatus", userinfo.Status);
-                    HttpContext.Session.SetInt32("sessionAge", 1576000000);
+                    //HttpContext.Session.SetInt32("sessionAge", 1576000000);
 
                     //TempData["name"] = userinfo.DisplayName;
                     return RedirectToAction("Index", "Home");
@@ -105,23 +112,51 @@ namespace _5Semester.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("UserId,Username,Status,Password,DisplayName")] User user)
+        public async Task<IActionResult> Create([Bind("UserId,Username,Status,Password,DisplayName,Salt")] User user)
         {
             if (ModelState.IsValid)
             {
-                StringBuilder Sb = new StringBuilder();
+                //////////////////////////////////////////////////////////////////////////////////////////////////
+                //StringBuilder Sb = new StringBuilder();
 
-                using (var hash = SHA256.Create())
+                //using (var hash = SHA256.Create())
+                //{
+                //    Encoding enc = Encoding.UTF8;
+                //    Byte[] result = hash.ComputeHash(enc.GetBytes(user.Password));
+
+                //    foreach (Byte b in result)
+                //        Sb.Append(b.ToString("x2"));
+                //}
+                //user.Password = Sb.ToString();
+                //user.Status = "User";
+                ////////////////////////////////////////////////////////////////////////////////////
+                byte[] salt = new byte[128 / 8];
+                using (var rng = RandomNumberGenerator.Create())
                 {
-                    Encoding enc = Encoding.UTF8;
-                    Byte[] result = hash.ComputeHash(enc.GetBytes(user.Password));
-
-                    foreach (Byte b in result)
-                        Sb.Append(b.ToString("x2"));
+                    rng.GetBytes(salt);
                 }
-                user.Password = Sb.ToString();
+
+                string hashed = Convert.ToBase64String(KeyDerivation.Pbkdf2(
+                    password: user.Password,
+                    salt: salt,
+                    prf: KeyDerivationPrf.HMACSHA1,
+                    iterationCount: 10000,
+                    numBytesRequested: 256 / 8));
+
+                user.Password = hashed;
                 user.Status = "User";
- 
+
+                //StringBuilder Sb = new StringBuilder();
+                
+                //foreach (Byte b in salt)
+                //{
+                //    Sb.Append(b.ToString("x2"));
+                //}
+                
+                //user.Salt = Sb.ToString();
+
+                user.Salt = salt;
+
                 _context.Add(user);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Login));

@@ -12,5 +12,7 @@ namespace _5Semester.Models
         public string Status { get; set; }
         public string Password { get; set; }
         public string DisplayName { get; set; }
+        public byte[] Salt { get; set; }
+
     }
 }
