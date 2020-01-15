@@ -64,7 +64,10 @@ namespace _5Semester.Controllers
                 {
                     HttpContext.Session.SetString("sessionName", userinfo.DisplayName);
                     HttpContext.Session.SetString("sessionStatus", userinfo.Status);
-                    //HttpContext.Session.SetInt32("sessionAge", 1576000000);
+                    Int32 unixTimestamp = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+                                                           /////2 hours in seconds//////                                                                            
+                    int sessiontime = Convert.ToInt32(unixTimestamp + 7200);
+                    HttpContext.Session.SetInt32("sessionAge", sessiontime);
 
                     //TempData["name"] = userinfo.DisplayName;
                     return RedirectToAction("Index", "Home");
@@ -77,7 +80,8 @@ namespace _5Semester.Controllers
         public async Task<IActionResult> Index()
         {
             string status = HttpContext.Session.GetString("sessionStatus");
-            if (status == "Admin"){
+            if (status == "Admin")
+            {
                 return View(await _context.User.ToListAsync());
             }
             return RedirectToAction("Index", "Home");
