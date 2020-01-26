@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using _5Semester.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace _5Semester.Controllers
 {
@@ -21,13 +22,21 @@ namespace _5Semester.Controllers
         // GET: Products
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Product.ToListAsync());
+            string status = HttpContext.Session.GetString("sessionStatus");
+            if (status == "Admin")
+            {
+                return View(await _context.Product.ToListAsync());
+            }
+            return RedirectToAction("Index", "Home");
         }
 
         // GET: Products/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
+            string status = HttpContext.Session.GetString("sessionStatus");
+            if (status == "Admin")
+            {
+                if (id == null)
             {
                 return NotFound();
             }
@@ -40,13 +49,20 @@ namespace _5Semester.Controllers
             }
 
             return View(product);
+            }
+            return RedirectToAction("Index", "Home");
         }
 
         // GET: Products/Create
         public IActionResult Create()
         {
-            return View();
-        }
+            string status = HttpContext.Session.GetString("sessionStatus");
+            if (status == "Admin") {
+
+                return View();
+            }
+            return RedirectToAction("Index", "Home");
+    }
 
         // POST: Products/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
@@ -55,19 +71,27 @@ namespace _5Semester.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("ProductId,ProductName,ProductPrice,ProductDescription")] Product product)
         {
-            if (ModelState.IsValid)
+            string status = HttpContext.Session.GetString("sessionStatus");
+            if (status == "Admin")
+            {
+                if (ModelState.IsValid)
             {
                 _context.Add(product);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(product);
+                return View(product);
+            }
+            return RedirectToAction("Index", "Home");
         }
 
         // GET: Products/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
+            string status = HttpContext.Session.GetString("sessionStatus");
+            if (status == "Admin")
+            {
+                if (id == null)
             {
                 return NotFound();
             }
@@ -78,6 +102,8 @@ namespace _5Semester.Controllers
                 return NotFound();
             }
             return View(product);
+            }
+            return RedirectToAction("Index", "Home");
         }
 
         // POST: Products/Edit/5
@@ -87,7 +113,10 @@ namespace _5Semester.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("ProductId,ProductName,ProductPrice,ProductDescription")] Product product)
         {
-            if (id != product.ProductId)
+            string status = HttpContext.Session.GetString("sessionStatus");
+            if (status == "Admin")
+            {
+                if (id != product.ProductId)
             {
                 return NotFound();
             }
@@ -113,12 +142,17 @@ namespace _5Semester.Controllers
                 return RedirectToAction(nameof(Index));
             }
             return View(product);
+            }
+            return RedirectToAction("Index", "Home");
         }
 
         // GET: Products/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
+            string status = HttpContext.Session.GetString("sessionStatus");
+            if (status == "Admin")
+            {
+                if (id == null)
             {
                 return NotFound();
             }
@@ -131,6 +165,8 @@ namespace _5Semester.Controllers
             }
 
             return View(product);
+            }
+            return RedirectToAction("Index", "Home");
         }
 
         // POST: Products/Delete/5
@@ -138,10 +174,15 @@ namespace _5Semester.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var product = await _context.Product.FindAsync(id);
+            string status = HttpContext.Session.GetString("sessionStatus");
+            if (status == "Admin")
+            {
+                var product = await _context.Product.FindAsync(id);
             _context.Product.Remove(product);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+            }
+            return RedirectToAction("Index", "Home");
         }
 
         private bool ProductExists(int id)

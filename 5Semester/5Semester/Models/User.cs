@@ -13,6 +13,7 @@ namespace _5Semester.Models
         public string Password { get; set; }
         public string DisplayName { get; set; }
         public byte[] Salt { get; set; }
+        public string Email { get; set; }
 
     }
 }

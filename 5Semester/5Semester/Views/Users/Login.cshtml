@@ -16,12 +16,12 @@
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div class="form-group">
             <label asp-for="Username" class="control-label"></label>
-            <input asp-for="Username" name="user" class="form-control" />
+            <input asp-for="Username" name="user" required="" pattern="[A-Za-z0-9]{1,14}" class="form-control" />
             <span asp-validation-for="Username" class="text-danger"></span>
         </div>
         <div class="form-group">
             <label asp-for="Password" class="control-label"></label>
-            <input asp-for="Password" type="password" name="pass" class="form-control" />
+            <input asp-for="Password" type="password" name="pass" required="" pattern="[A-Za-z0-9]{1,14}" class="form-control" />
             <span asp-validation-for="Password" class="text-danger"></span>
         </div>
         <div class="form-group">
@@ -30,6 +30,9 @@
     </form>
     <div style="padding-bottom:200px;">
         <a asp-area="" asp-controller="Users" asp-action="Create">Sign Up</a>
+    </div>
+    <div style="padding-bottom:200px;">
+        <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="PasswordRecoveryPage">Forgot my password</a>
     </div>
 </body>
 </html>
